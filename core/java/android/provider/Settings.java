@@ -3000,6 +3000,114 @@ public final class Settings {
         public static final Validator NOTIFICATION_LIGHT_PULSE_VALIDATOR = sBooleanValidator;
 
         /**
+         * What color to use for the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR =
+                "notification_light_pulse_default_color";
+
+        /**
+         * How long to flash the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON =
+                "notification_light_pulse_default_led_on";
+
+        /**
+         * How long to wait between flashes for the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF =
+                "notification_light_pulse_default_led_off";
+
+        /**
+         * What color to use for the missed call notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CALL_COLOR =
+                "notification_light_pulse_call_color";
+
+        /**
+         * How long to flash the missed call notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CALL_LED_ON =
+                "notification_light_pulse_call_led_on";
+
+        /**
+         * How long to wait between flashes for the missed call notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CALL_LED_OFF =
+                "notification_light_pulse_call_led_off";
+        /**
+         * What color to use for the voicemail notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_COLOR =
+                "notification_light_pulse_vmail_color";
+
+        /**
+         * How long to flash the voicemail notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_ON =
+                "notification_light_pulse_vmail_led_on";
+
+        /**
+         * How long to wait between flashes for the voicemail notification LED
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_OFF =
+                "notification_light_pulse_vmail_led_off";
+
+        /**
+         * Whether to use the custom LED values for the notification pulse LED.
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE =
+                "notification_light_pulse_custom_enable";
+
+        /**
+         * Which custom LED values to use for the notification pulse LED.
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES =
+                "notification_light_pulse_custom_values";
+
+        /**
+         * Whether the battery light should be enabled (if hardware supports it)
+         * The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_ENABLED = "battery_light_enabled";
+
+        /**
+         * Whether the battery LED should repeatedly flash when the battery is low
+         * on charge. The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_PULSE = "battery_light_pulse";
+
+        /**
+         * What color to use for the battery LED while charging - low
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_LOW_COLOR = "battery_light_low_color";
+
+        /**
+         * What color to use for the battery LED while charging - medium
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_MEDIUM_COLOR = "battery_light_medium_color";
+
+        /**
+         * What color to use for the battery LED while charging - full
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_FULL_COLOR = "battery_light_full_color";
+
+        /**
          * Show pointer location on screen?
          * 0 = no
          * 1 = yes
@@ -3237,6 +3345,499 @@ public final class Settings {
          * @hide
          */
         public static final String WIFI_AUTO_CONNECT_TYPE = "wifi_auto_connect_type";
+
+        /**
+         * Whether to use slim recents
+         * @hide
+         */
+        public static final String USE_SLIM_RECENTS = "use_slim_recents";
+
+        /**
+         * Whether to only show actually running tasks
+         * @hide
+         */
+        public static final String RECENT_SHOW_RUNNING_TASKS = "show_running_tasks";
+
+        /**
+         * Amount of apps to show in recents
+         * @hide
+         */
+        public static final String RECENTS_MAX_APPS = "recents_max_apps";
+
+        /**
+         * Whether recent panel gravity is left or right (default = Gravity.RIGHT).
+         * @hide
+         */
+        public static final String RECENT_PANEL_GRAVITY = "recent_panel_gravity";
+
+        /**
+         * Size of recent panel view in percent (default = 100).
+         * @hide
+         */
+        public static final String RECENT_PANEL_SCALE_FACTOR = "recent_panel_scale_factor";
+
+        /**
+         * User favorite tasks for recent panel.
+         * @hide
+         */
+        public static final String RECENT_PANEL_FAVORITES = "recent_panel_favorites";
+
+        /**
+         * Recent panel expanded mode (auto = 0, always = 1, never = 2).
+         * default = 0.
+         *
+         * @hide
+         */
+        public static final String RECENT_PANEL_EXPANDED_MODE = "recent_panel_expanded_mode";
+
+        /**
+         * Recent panel: Show topmost task
+         *
+         * @hide
+         */
+        public static final String RECENT_PANEL_SHOW_TOPMOST = "recent_panel_show_topmost";
+
+        /**
+         * Recent panel background color
+         *
+         * @hide
+         */
+        public static final String RECENT_PANEL_BG_COLOR = "recent_panel_bg_color";
+
+        /**
+         * Recent card background color
+         *
+         * @hide
+         */
+        public static final String RECENT_CARD_BG_COLOR = "recent_card_bg_color";
+
+        /**
+         * Recent card text color
+         *
+         * @hide
+         */
+        public static final String RECENT_CARD_TEXT_COLOR = "recent_card_text_color";
+
+         /**
+         * The global recents long press activity chosen by the user.
+         * This setting is stored as a flattened component name as
+         * per {@link ComponentName#flattenToString()}.
+         *
+         * @hide
+         */
+        public static final String RECENTS_LONG_PRESS_ACTIVITY = "recents_long_press_activity";
+
+        /**
+         * Change the number of columns displayed in the Settings dashboard
+         * @hide
+         */
+        public static final String DASHBOARD_COLUMNS = "dashboard_columns";
+
+        /**
+         * Whether to display dashboard tiles in a double line layout
+         * @hide
+         */
+        public static final String DASHBOARD_TILEVIEW_DOUBLE_LINES = "dashboard_tileview_double_lines";
+
+        /**
+         * Show or hide clock
+         * 0 - hide
+         * 1 - show (default)
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK = "status_bar_clock";
+
+        /**
+         * AM/PM Style for clock options
+         * 0 - Normal AM/PM
+         * 1 - Small AM/PM
+         * 2 - No AM/PM
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_AM_PM_STYLE = "statusbar_clock_am_pm_style";
+
+        /**
+         * Style of clock
+         * 0 - Hide Clock
+         * 1 - Right Clock
+         * 2 - Center Clock
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_STYLE = "statusbar_clock_style";
+
+        /**
+         * Setting for clock color
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
+
+        /**
+         * Shows custom date before clock time
+         * 0 - No Date
+         * 1 - Small Date
+         * 2 - Normal Date
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_DATE_DISPLAY = "statusbar_clock_date_display";
+
+        /**
+         * Sets the date string style
+         * 0 - Regular style
+         * 1 - Lowercase
+         * 2 - Uppercase
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_DATE_STYLE = "statusbar_clock_date_style";
+
+        /**
+         * Stores the java DateFormat string for the date
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
+
+        /**
+         *  Enable navigation bar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
+
+        /**
+         * Whether to show the IME arrows in the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_IME_ARROWS = "status_bar_ime_arrows";
+
+          /**
+         * Action to perform when the home key is pressed. (default: ACTION_HOME)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_HOME_ACTION = "key_home_action";
+
+        /**
+         * Action to perform when the home key is long-pressed.
+         * (Default can be configured via config_longPressOnHomeBehavior)
+         * 0 - Nothing
+         * 1 - Menu
+         * 2 - App-switch
+         * 3 - Search
+         * 4 - Voice search
+         * 5 - In-app search
+         * 6 - Launch Camera
+         * 7 - Last app
+         * @hide
+         */
+
+        public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
+
+        /**
+         * Action to perform when the home key is double-tapped.
+         * (Default can be configured via config_doubleTapOnHomeBehavior)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_HOME_DOUBLE_TAP_ACTION = "key_home_double_tap_action";
+
+        /**
+         * Action to perform when the menu key is pressed. (Default is 1)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_MENU_ACTION = "key_menu_action";
+
+        /**
+         * Action to perform when the menu key is long-pressed.
+         * (Default is 0 on devices with a search key, 3 on devices without)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+
+        public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
+
+ 		 /**
+         * Action to perform when the menu key is double tapped. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+
+        public static final String KEY_MENU_DOUBLE_TAP_ACTION = "key_menu_double_tap_action";
+
+        /**
+         * Whether to show the battery bar
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
+
+        /**
+         * Action to perform when the assistant (search) key is pressed. (Default is 3)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_ASSIST_ACTION = "key_assist_action";
+
+        /**
+         * Action to perform when the assistant (search) key is long-pressed. (Default is 4)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_ASSIST_LONG_PRESS_ACTION = "key_assist_long_press_action";
+
+        /**
+         * Action to perform when the assistant (search) key is double tapped.
+         * (default: ACTION_NULL) (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_ASSIST_DOUBLE_TAP_ACTION = "key_assist_double_tap_action";
+
+        /**
+         * Action to perform when the app switch key is pressed. (Default is 2)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_APP_SWITCH_ACTION = "key_app_switch_action";
+
+        /**
+         * Action to perform when the app switch key is long-pressed. (Default is 0)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+         * @hide
+         */
+        public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
+
+        /**
+         * Action to perform when the app switch key is double tapped. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_APP_SWITCH_DOUBLE_TAP_ACTION =
+                "key_app_switch_double_tap_action";
+
+        /**
+         * Action to perform when the camera key is pressed. (default: LAUNCH_CAMERA)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_CAMERA_ACTION = "key_camera_action";
+
+        /**
+         * Action to perform when the camera key is long-pressed. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_CAMERA_LONG_PRESS_ACTION =
+                "key_camera_long_press_action";
+
+        /**
+         * Action to perform when the camera key is double tapped. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_CAMERA_DOUBLE_TAP_ACTION =
+                "key_camera_double_tap_action";
+
+        /**
+         * Whether custom hardware key rebinding is enabled
+         * @hide
+         */
+        public static final String HARDWARE_KEY_REBINDING = "hardware_key_rebinding";
+
+		/**
+         * Action to perform when the back key is pressed (default: ACTION_BACK)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_BACK_ACTION = "key_back_action";
+
+        /**
+         * Action to perform when the back key is long-pressed. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_BACK_LONG_PRESS_ACTION = "key_back_long_press_action";
+
+        /**
+         * Action to perform when the back key is double tapped. (default: ACTION_NULL)
+         * (See ButtonsConstants.java for valid values)
+         * @hide
+         */
+        public static final String KEY_BACK_DOUBLE_TAP_ACTION = "key_back_double_tap_action";
+
+         /**
+          * Position of date
+          * 0 - Left of clock
+          * 1 - Right of clock
+         * Boolean value on whether to show weather in the statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_WEATHER = "status_bar_show_weather";
+
+        /**
+          * Volume keys control cursor in text fields (default is 0)
+          * 0 - Disabled
+          * 1 - Volume up/down moves cursor left/right
+          * 2 - Volume up/down moves cursor right/left
+          * @hide
+          */
+         public static final String STATUSBAR_CLOCK_DATE_POSITION = "statusbar_clock_date_position";
+
+        /**
+         * Enable double tap gesture anywhere on the lock screen put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_LOCK_SCREEN = "double_tap_sleep_lock_screen";
+
+        /**
+         * Status bar carrier label
+         * 0: Hide
+         * 1: Display on keyguard status bar
+         * 2: Display on Normal status bar
+         * 3: Enabled for both
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_CARRIER = "status_bar_show_carrier";
+
+        /**
+         * custom carrier label. The value is
+         * String.
+         */
+        public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
+
+        /**
+         * Carrier Label Custom Color
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_COLOR = "status_bar_carrier_color";
+
+		/**
+        * Network traffic indicator, goes from least to greatest significant bitwise
+        * 0 = Display up-stream traffic if set
+        * 1 = Display down-stream traffic if set
+        * 2 = Show as Byte/s if set
+        * 16-31 = Refresh interval(ms) min: 250 max: 32750 default: 1000
+        * @hide
+        */
+       public static final String NETWORK_TRAFFIC_STATE = "network_traffic_state";
+
+       /**
+        * Network stats Color style
+        * @hide
+        */
+       public static final String NETWORK_TRAFFIC_COLOR = "network_traffic_color";
+
+       /**
+        * Whether or not to hide the network traffic indicator when there is no activity
+        * @hide
+        */
+       public static final String NETWORK_TRAFFIC_AUTOHIDE = "network_traffic_autohide";
+
+       /**
+        * Network traffic inactivity threshold (default is 10 kBs)
+        * @hide
+        */
+       public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
+
+        /**
+         *  Enable statusbar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_GESTURE = "double_tap_sleep_gesture";
+
+		/**
+         * Display style of the status bar battery information
+         * 0: Display the battery an icon in portrait mode
+         * 2: Display the battery as a circle
+         * 4: Hide the battery status information
+         * 5: Display the battery an icon in landscape mode
+         * 6: Display the battery as plain text
+         * default: 0
+         * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_STYLE = "status_bar_battery_style";
+
+        /**
+         * Status bar battery %
+         * 0: Hide the battery percentage
+         * 1: Display the battery percentage inside the icon
+         * 2: Display the battery percentage next to the icon
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
+
+        /**
+         * Whether to use the custom status bar header or not
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER = "status_bar_custom_header";
+
+        /**
+         * Current active provider
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_PROVIDER = "status_bar_custom_header_provider";
+
+        /**
+         * Whether to use default custom header or poly hd
+         * 0 = default
+         * 1 = modern
+         * 2 = poly hd
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_DEFAULT = "status_bar_custom_header_default";
+
+        /**
+          * Volume keys control cursor in text fields (default is 0)
+          * 0 - Disabled
+          * 1 - Volume up/down moves cursor left/right
+          * 2 - Volume up/down moves cursor right/left
+          * @hide
+          */
+         public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
+
+        /**
+         * Whether to enable status and navigation bar color in battery saver mode.
+         *
+         * @hide
+         */
+        public static final String BATTERY_SAVER_MODE_COLOR = "battery_save_mode_color";
+
+        /**
+         * Whether the proximity sensor will adjust call to speaker
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER = "proximity_auto_speaker";
+
+        /**
+         * Time delay to activate speaker after proximity sensor triggered
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER_DELAY = "proximity_auto_speaker_delay";
+
+        /**
+         * Whether the proximity sensor will adjust call to speaker,
+         * only while in call (not while ringing on outgoing call)
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER_INCALL_ONLY =
+                "proximity_auto_speaker_incall_only";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
