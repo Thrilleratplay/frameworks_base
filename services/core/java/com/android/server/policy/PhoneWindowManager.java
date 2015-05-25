@@ -1599,6 +1599,28 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * eg. Disable long press on home goes to recents on sw600dp.
      */
     private void readConfigurationDependentBehaviors() {
+        final boolean hasMenu = (mDeviceHardwareKeys & KEY_MASK_MENU) != 0;
+        final boolean hasHome = (mDeviceHardwareKeys & KEY_MASK_HOME) != 0;
+        final boolean hasAssist = (mDeviceHardwareKeys & KEY_MASK_ASSIST) != 0;
+        final boolean hasAppSwitch = (mDeviceHardwareKeys & KEY_MASK_APP_SWITCH) != 0;
+        final ContentResolver resolver = mContext.getContentResolver();
+
+        // Initialize all assignments to sane defaults.
+        mPressOnMenuBehavior = KEY_ACTION_MENU;
+
+        mLongPressOnMenuBehavior = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_longPressOnMenuBehavior);
+
+        if (mLongPressOnMenuBehavior == KEY_ACTION_NOTHING &&
+               (hasMenu && !hasAssist)) {
+            mLongPressOnMenuBehavior = KEY_ACTION_SEARCH;
+        }
+        mPressOnAssistBehavior = KEY_ACTION_SEARCH;
+        mLongPressOnAssistBehavior = KEY_ACTION_VOICE_SEARCH;
+        mPressOnAppSwitchBehavior = KEY_ACTION_APP_SWITCH;
+        mLongPressOnAppSwitchBehavior = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_longPressOnAppSwitchBehavior);
+
         mLongPressOnHomeBehavior = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_longPressOnHomeBehavior);
         if (mLongPressOnHomeBehavior < LONG_PRESS_HOME_NOTHING ||
