@@ -1585,7 +1585,7 @@ public final class Settings {
                 return value.length() <= MAX_IPV6_LENGTH;
             }
         };
-        
+
         /** @hide */
         public static void getMovedToGlobalSettings(Set<String> outKeySet) {
             outKeySet.addAll(MOVED_TO_GLOBAL);
@@ -2343,7 +2343,7 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL =
                 "lockscreen_quick_unlock_control";
- 
+
 	/**
          * A formatted string of the next alarm that is set, or the empty string
          * if there is no alarm set.
@@ -2455,7 +2455,7 @@ public final class Settings {
           * @hide
           */
          public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
- 
+
         /**
          * The keyboard brightness to be used while the screen is on.
          * Valid value range is between 0 and {@link PowerManager#getMaximumKeyboardBrightness()}
@@ -3464,7 +3464,7 @@ public final class Settings {
          */
         public static final String ENABLE_TASK_MANAGER = "enable_task_manager";
 
-	/**
+	       /**
          * Whether lock-to-app will be triggered by long-press on recents.
          * @hide
          */
@@ -3502,6 +3502,52 @@ public final class Settings {
          * @hide
          */
         public static final String RECENTS_FULL_SCREEN = "recents_full_screen";
+
+        /**
+         * Whether to show the weather info on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_SHOW_WEATHER = "lock_screen_show_weather";
+
+        /**
+         * Whether to show the weather location on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_SHOW_WEATHER_LOCATION = "lock_screen_show_weather_location";
+
+        /**
+         * Whether to show the weather update timestamp on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_SHOW_WEATHER_TIMESTAMP = "lock_screen_show_weather_timestamp";
+
+        /**
+         * Weather condition icon on the lock screen
+         * 0: monochrome
+         * 1: colored
+         * 2: vclouds
+         * default: 0
+         * @hide
+         */
+        public static final String LOCK_SCREEN_WEATHER_CONDITION_ICON = "lock_screen_weather_condition_icon";
+
+        /**
+         * Whether to colorize all weather condition icons on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_WEATHER_COLORIZE_ALL_ICONS = "lock_screen_weather_colorize_all_icons";
+
+        /**
+         * Color of the weather text on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_WEATHER_TEXT_COLOR = "lock_screen_weather_text_color";
+
+        /**
+         * Color of the weather condition icons on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_WEATHER_ICON_COLOR = "lock_screen_weather_icon_color";
 
         /**
          * I am the lolrus.
@@ -3767,7 +3813,7 @@ public final class Settings {
          * @hide
          */
         public static final String DASHBOARD_COLUMNS = "dashboard_columns";
-        
+
         /**
          * Whether to display dashboard dividers
          * @hide
@@ -3868,7 +3914,7 @@ public final class Settings {
          * 7 - Last app
          * @hide
          */
-         
+
         public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
 
         /**
@@ -3892,15 +3938,15 @@ public final class Settings {
          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
          * @hide
          */
-     
+
         public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
- 		
+
  		 /**
          * Action to perform when the menu key is double tapped. (default: ACTION_NULL)
          * (See ButtonsConstants.java for valid values)
          * @hide
          */
-         
+
         public static final String KEY_MENU_DOUBLE_TAP_ACTION = "key_menu_double_tap_action";
 
         /**
@@ -3942,7 +3988,7 @@ public final class Settings {
          * @hide
          */
         public static final String KEY_ASSIST_LONG_PRESS_ACTION = "key_assist_long_press_action";
-   
+
         /**
          * Action to perform when the assistant (search) key is double tapped.
          * (default: ACTION_NULL) (See ButtonsConstants.java for valid values)
@@ -3963,15 +4009,15 @@ public final class Settings {
          * @hide
          */
         public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
-     
+
         /**
          * Action to perform when the app switch key is double tapped. (default: ACTION_NULL)
          * (See ButtonsConstants.java for valid values)
          * @hide
          */
         public static final String KEY_APP_SWITCH_DOUBLE_TAP_ACTION =
-                "key_app_switch_double_tap_action";		
- 
+                "key_app_switch_double_tap_action";
+
         /**
          * Action to perform when the camera key is pressed. (default: LAUNCH_CAMERA)
          * (See ButtonsConstants.java for valid values)
@@ -3994,13 +4040,13 @@ public final class Settings {
          */
         public static final String KEY_CAMERA_DOUBLE_TAP_ACTION =
                 "key_camera_double_tap_action";
-       
+
         /**
          * Whether custom hardware key rebinding is enabled
          * @hide
          */
         public static final String HARDWARE_KEY_REBINDING = "hardware_key_rebinding";
-	
+
 		/**
          * Action to perform when the back key is pressed (default: ACTION_BACK)
          * (See ButtonsConstants.java for valid values)
@@ -4020,7 +4066,7 @@ public final class Settings {
          * (See ButtonsConstants.java for valid values)
          * @hide
          */
-        public static final String KEY_BACK_DOUBLE_TAP_ACTION = "key_back_double_tap_action";      
+        public static final String KEY_BACK_DOUBLE_TAP_ACTION = "key_back_double_tap_action";
 
          /**
           * Position of date
@@ -4058,7 +4104,7 @@ public final class Settings {
          * 1: Display on keyguard status bar
          * 2: Display on Normal status bar
          * 3: Enabled for both
-         * @hide        
+         * @hide
          */
         public static final String STATUS_BAR_SHOW_CARRIER = "status_bar_show_carrier";
 
@@ -4101,7 +4147,7 @@ public final class Settings {
         * @hide
         */
        public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
-       
+
         /**
          *  Enable statusbar double tap gesture on to put device to sleep
          * @hide
@@ -4981,7 +5027,7 @@ public final class Settings {
             }
             return list;
         }
-        
+
         /**
          * Store a name/value pair into the database.
          * @param resolver to access the database with
@@ -6778,7 +6824,7 @@ public final class Settings {
          * @hide
          */
         public static final String ASSISTANT = "assistant";
- 
+
         /**
          * Whether the camera launch gesture should be disabled.
          *
@@ -6806,7 +6852,7 @@ public final class Settings {
          * @hide
          */
         public static final String QS_TILES = "sysui_qs_tiles";
-        
+
         /**
          * This are the settings to be backed up.
          *
@@ -7256,7 +7302,7 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_ACTIONS = "power_menu_actions";
-        
+
         /**
          * URI for the "wireless charging started" sound.
          * @hide
@@ -7426,7 +7472,7 @@ public final class Settings {
         */
        @Deprecated
        public static final String INSTALL_NON_MARKET_APPS = Secure.INSTALL_NON_MARKET_APPS;
-        
+
        /**
         * Whether HDMI control shall be enabled. If disabled, no CEC/MHL command will be
         * sent or processed. (0 = false, 1 = true)

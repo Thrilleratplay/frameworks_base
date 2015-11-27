@@ -117,6 +117,8 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.util.cm.ActionUtils;
+import com.android.internal.util.du.WeatherControllerImpl;
+import com.android.internal.util.tipsy.DUPackageMonitor;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -180,7 +182,6 @@ import com.android.systemui.statusbar.policy.RotationLockControllerImpl;
 import com.android.systemui.statusbar.policy.SecurityControllerImpl;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
-import com.android.systemui.statusbar.policy.WeatherControllerImpl;
 import com.android.systemui.statusbar.policy.ZenModeController;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout.OnChildLocationsChangedListener;
@@ -445,7 +446,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private List<ComponentName> mCustomRecentsLongPressHandlerCandidates = new ArrayList<>();
     // - The custom Recents Long Press, if selected.  When null, use default (switch last app).
     private ComponentName mCustomRecentsLongPressHandler = null;
- 
+
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -465,7 +466,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.RECENT_CARD_TEXT_COLOR), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT), 
+                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
 Settings.System.RECENTS_LONG_PRESS_ACTIVITY), false, this);
@@ -539,8 +540,8 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
                 if (mNavigationBarView != null) {
                     mNavigationBarView.updateNavigationBarSettings();
                 }
-            }          
-                       
+            }
+
             update();
         }
 
@@ -1095,7 +1096,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
             mBatterySaverWarningColor = mContext.getResources()
                    .getColor(com.android.internal.R.color.battery_saver_mode_color);
         }
- 
+
         // set the inital view visibility
         setAreThereNotifications();
 
@@ -1287,7 +1288,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED);       
+        filter.addAction(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED);
         context.registerReceiverAsUser(mBroadcastReceiver, UserHandle.ALL, filter, null, null);
 
         IntentFilter demoFilter = new IntentFilter();
@@ -1306,7 +1307,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         packageFilter.addDataScheme("package");
         context.registerReceiver(mPackageBroadcastReceiver, packageFilter);
- 
+
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
 
@@ -2367,7 +2368,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
     public boolean isKeyguardShowingMedia() {
         return mKeyguardShowingMedia;
     }
- 
+
     public boolean isQsExpanded() {
         return mNotificationPanel.isQsExpanded();
     }
@@ -3056,7 +3057,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         if (powerSave && getBarState() == StatusBarState.SHADE) {
             mode = MODE_WARNING;
         }
-        
+
         if (mode == MODE_WARNING) {
             transitions.setWarningColor(mBatterySaverWarningColor);
         }
@@ -3487,7 +3488,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
             }
         }
     };
- 
+
     private BroadcastReceiver mDemoReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             if (DEBUG) Log.v(TAG, "onReceive: " + intent);
@@ -3612,7 +3613,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
 
 
     private void recreateStatusBar() {
-       mStatusBarHeaderMachine.updateEnablement(); 
+       mStatusBarHeaderMachine.updateEnablement();
        mStatusBarHeaderMachine.doUpdateStatusHeaderObservers(true);
     }
 
@@ -4613,7 +4614,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
                 }
                 mLastLockToAppLongPress = time;
             }
-            
+
             return sendBackLongPress;
         } catch (RemoteException e) {
             Log.d(TAG, "Unable to reach activity manager", e);
@@ -4737,7 +4738,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
             mCustomRecentsLongPressHandler = null;
         }
     }
- 
+
     /**
      * Updates the cache of Recents Long Press applications.
      *
@@ -4773,7 +4774,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
             }
         }
     }
-    
+
     private ActivityManager.RunningTaskInfo getLastTask(final ActivityManager am) {
         final String defaultHomePackage = resolveCurrentLauncherPackage();
         List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
