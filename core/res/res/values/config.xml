@@ -2439,8 +2439,8 @@
     <!-- Is Advanced Reboot enabled? -->
     <bool name="config_advanced_reboot">true</bool>
 
-    <!-- Older sensors are not setting event.timestamp correctly. Setting to
+    <!-- Older rotation sensors are not setting event.timestamp correctly. Setting to
          true will use SystemClock.elapsedRealtimeNanos() to set timestamp. -->
-    <bool name="config_useSystemClockforSensors">false</bool>
+    <bool name="config_useSystemClockforRotationSensor">false</bool>
 
 </resources>
