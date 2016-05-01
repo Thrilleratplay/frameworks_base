@@ -962,6 +962,4 @@ public final class ShutdownThread extends Thread {
             }
         }
     };
-=======
->>>>>>> 8e2b240... Advanced Reboot (1/2)
 }
