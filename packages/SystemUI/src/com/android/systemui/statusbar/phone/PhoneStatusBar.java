@@ -98,9 +98,7 @@ import android.widget.TextView;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.util.cm.ActionUtils;
 import com.android.internal.util.du.WeatherControllerImpl;
-import com.android.internal.util.tipsy.DUPackageMonitor;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -363,177 +361,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private int mNavigationIconHints = 0;
     private HandlerThread mHandlerThread;
-
-    Runnable mLongPressBrightnessChange = new Runnable() {
-        @Override
-        public void run() {
-            mStatusBarView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            adjustBrightness(mInitialTouchX);
-            mLinger = BRIGHTNESS_CONTROL_LINGER_THRESHOLD + 1;
-        }
-    };
-
-    // Custom Recents Long Press
-    // - Tracks Event state for custom (user-configurable) Long Presses.
-    private boolean mCustomRecentsLongPressed = false;
-    // - The ArrayList is updated when packages are added and removed.
-    private List<ComponentName> mCustomRecentsLongPressHandlerCandidates = new ArrayList<>();
-    // - The custom Recents Long Press, if selected.  When null, use default (switch last app).
-    private ComponentName mCustomRecentsLongPressHandler = null;
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.USE_SLIM_RECENTS), false, this,
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.RECENT_CARD_BG_COLOR), false, this,
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.RECENT_CARD_TEXT_COLOR), false, this,
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-Settings.System.RECENTS_LONG_PRESS_ACTIVITY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-Settings.System.BATTERY_SAVER_MODE_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.ENABLE_TASK_MANAGER),
-                    false, this, UserHandle.USER_ALL);
-            update();
-        }
-
-        @Override
-         public void onChange(boolean selfChange, Uri uri) {
-             super.onChange(selfChange, uri);
-
-            if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.USE_SLIM_RECENTS))) {
-                updateRecents();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.RECENT_CARD_BG_COLOR))
-                    || uri.equals(Settings.System.getUriFor(
-                    Settings.System.RECENT_CARD_TEXT_COLOR))) {
-                rebuildRecentsScreen();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT))) {
-                    recreateStatusBar();
-                    updateRowStates();
-                    updateSpeedbump();
-                    updateClearAll();
-                    updateEmptyShadeView();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.ENABLE_TASK_MANAGER))) {
-                    mShowTaskManager = Settings.System.getIntForUser(
-                            mContext.getContentResolver(),
-                            Settings.System.ENABLE_TASK_MANAGER,
-                            0, UserHandle.USER_CURRENT) == 1;
-                             recreateStatusBar();
-
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.BATTERY_SAVER_MODE_COLOR))) {
-                    mBatterySaverWarningColor = Settings.System.getIntForUser(
-                            mContext.getContentResolver(),
-                            Settings.System.BATTERY_SAVER_MODE_COLOR, 1,
-                            UserHandle.USER_CURRENT);
-                    if (mBatterySaverWarningColor != 0) {
-                        mBatterySaverWarningColor = mContext.getResources()
-                                .getColor(com.android.internal.R.color.battery_saver_mode_color);
-                    }
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTON_TINT))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTON_TINT_MODE))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_CONFIG))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_GLOW_TINT))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.MENU_LOCATION))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.MENU_VISIBILITY))) {
-                if (mNavigationBarView != null) {
-                    mNavigationBarView.recreateNavigationBar();
-                    prepareNavigationBarView();
-                }
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_CAN_MOVE))) {
-                prepareNavigationBarView();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_IME_ARROWS))) {
-                if (mNavigationBarView != null) {
-                    mNavigationBarView.updateNavigationBarSettings();
-                }
-            }
-
-            update();
-        }
-
-        public void update() {
-            ContentResolver resolver = mContext.getContentResolver();
-            int mode = Settings.System.getIntForUser(mContext.getContentResolver(),
-                            Settings.System.SCREEN_BRIGHTNESS_MODE,
-                            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
-                            UserHandle.USER_CURRENT);
-            mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
-            mBrightnessControl = Settings.System.getInt(
-                    resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 1) == 1;
-
-
-	boolean showTaskManager = Settings.System.getIntForUser(resolver,
-                    Settings.System.ENABLE_TASK_MANAGER, 0, UserHandle.USER_CURRENT) == 1;
-	    if (mShowTaskManager != showTaskManager) {
-                if (!mShowTaskManager) {
-                    // explicitly reset click state when disabled
-                    mShowTaskList = false;
-                }
-                mShowTaskManager = showTaskManager;
-                if (mHeader != null) {
-                    mHeader.setTaskManagerEnabled(showTaskManager);
-                }
-                if (mNotificationPanel != null) {
-                    mNotificationPanel.setTaskManagerEnabled(showTaskManager);
-                }
-            }
-
-// This method reads Settings.Secure.RECENTS_LONG_PRESS_ACTIVITY
-            updateCustomRecentsLongPressHandler(false);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTON_TINT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTON_TINT_MODE),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_GLOW_TINT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_CONFIG),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_CAN_MOVE),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.MENU_LOCATION),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.MENU_VISIBILITY),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_IME_ARROWS),
-                    false, this, UserHandle.USER_ALL);
-        }
-    }
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
     private boolean mUserSetup = false;
@@ -986,15 +813,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
                 mKeyguardBottomArea.getLockIcon());
         mKeyguardBottomArea.setKeyguardIndicationController(mKeyguardIndicationController);
 
-        mBatterySaverWarningColor = Settings.System.getIntForUser(
-                mContext.getContentResolver(),
-                Settings.System.BATTERY_SAVER_MODE_COLOR, 1,
-                UserHandle.USER_CURRENT);
-        if (mBatterySaverWarningColor != 0) {
-            mBatterySaverWarningColor = mContext.getResources()
-                   .getColor(com.android.internal.R.color.battery_saver_mode_color);
-        }
-
         // set the inital view visibility
         setAreThereNotifications();
 
@@ -1119,7 +937,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED);
         context.registerReceiverAsUser(mBroadcastReceiver, UserHandle.ALL, filter, null, null);
 
         IntentFilter demoFilter = new IntentFilter();
@@ -1129,15 +946,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         demoFilter.addAction(ACTION_DEMO);
         context.registerReceiverAsUser(mDemoReceiver, UserHandle.ALL, demoFilter,
                 android.Manifest.permission.DUMP, null);
-
-        // receive broadcasts for packages
-        IntentFilter packageFilter = new IntentFilter();
-        packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageFilter.addDataScheme("package");
-        context.registerReceiver(mPackageBroadcastReceiver, packageFilter);
 
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
@@ -2158,10 +1966,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         return mLeaveOpenOnKeyguardHide;
     }
 
-    public boolean isKeyguardShowingMedia() {
-        return mKeyguardShowingMedia;
-    }
-
     public boolean isQsExpanded() {
         return mNotificationPanel.isQsExpanded();
     }
@@ -2741,10 +2545,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         if (powerSave && getBarState() == StatusBarState.SHADE) {
             mode = MODE_WARNING;
         }
-
-        if (mode == MODE_WARNING) {
-            transitions.setWarningColor(mBatterySaverWarningColor);
-        }
         transitions.transitionTo(mode, anim);
     }
 
@@ -3159,19 +2959,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         }
     };
 
-    private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            if (DEBUG) Log.v(TAG, "onReceive: " + intent);
-            String action = intent.getAction();
-            if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
-                    Intent.ACTION_PACKAGE_CHANGED.equals(action) ||
-                    Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(action) ||
-                    Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-                updateCustomRecentsLongPressHandler(true);
-            }
-        }
-    };
-
     private BroadcastReceiver mDemoReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             if (DEBUG) Log.v(TAG, "onReceive: " + intent);
@@ -3267,21 +3054,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
         mContext.getContentResolver().registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.USER_SETUP_COMPLETE), true,
                 mUserSetupObserver, mCurrentUserId);
-    }
-
-    public void resetQsPanelVisibility() {
-        mShowTaskList = mShowTaskList;
-        if (mShowTaskList) {
-            mQSPanel.setVisibility(View.VISIBLE);
-            mTaskManagerPanel.setVisibility(View.GONE);
-            mShowTaskList = false;
-        }
-    }
-
-
-    private void recreateStatusBar() {
-       mStatusBarHeaderMachine.updateEnablement();
-       mStatusBarHeaderMachine.doUpdateStatusHeaderObservers(true);
     }
 
     /**
@@ -4273,33 +4045,6 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
                     activityManager.stopLockTaskModeOnCurrent();
                     // When exiting refresh disabled flags.
                     mNavigationBarView.setDisabledFlags(mDisabled1, true);
-                    mNavigationBarView.setOverrideMenuKeys(false);
-                }
-                mLastLockToAppLongPress = time;
-            }
-
-            return sendBackLongPress;
-        } catch (RemoteException e) {
-            Log.d(TAG, "Unable to reach activity manager", e);
-            return false;
-        }
-    }
-
-    protected View.OnTouchListener mRecentsPreloadOnTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-            // Handle Document switcher
-            // Additional optimization when we have software system buttons - start loading the recent
-            // tasks on touch down
-            if (action == MotionEvent.ACTION_DOWN) {
-                preloadRecents();
-            } else if (action == MotionEvent.ACTION_CANCEL) {
-                cancelPreloadingRecents();
-            } else if (action == MotionEvent.ACTION_UP) {
-                if (!v.isPressed()) {
-                    cancelPreloadingRecents();
                 }
             }
             if (sendBackLongPress) {
@@ -4308,115 +4053,7 @@ Settings.System.BATTERY_SAVER_MODE_COLOR),
                 keyButtonView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
             }
         } catch (RemoteException e) {
-            Log.e(TAG, "Cannot get recent tasks", e);
-        }
-        if (recentTasks != null && recentTasks.size() > 0) {
-            String pkgName = recentTasks.get(0).baseIntent.getComponent().getPackageName();
-            intent.putExtra(Intent.EXTRA_CURRENT_PACKAGE_NAME, pkgName);
-        }
-
-        intent.setComponent(customComponentName);
-        try {
-            // Allow the touch event to continue into the new activity.
-            mNavigationBarView.setSlippery(true);
-            mCustomRecentsLongPressed = true;
-
-            mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
-
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Cannot start activity", e);
-
-            // If the activity failed to launch, clean up
-            cleanupCustomRecentsLongPressHandler();
-        }
-    }
-
-    /**
-     * Get component name for the recent long press setting. Null means default switch to last app.
-     *
-     * Note: every time packages changed, the setting must be re-evaluated.  This is to check that the
-     * component was not uninstalled or disabled.
-     */
-    private void updateCustomRecentsLongPressHandler(boolean scanPackages) {
-        // scanPackages should be true when the PhoneStatusBar is starting for
-        // the first time, and when any package activity occurred.
-        if (scanPackages) {
-            updateCustomRecentsLongPressCandidates();
-        }
-
-        String componentString = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.RECENTS_LONG_PRESS_ACTIVITY);
-        if (componentString == null) {
-            mCustomRecentsLongPressHandler = null;
-            return;
-        }
-
-        ComponentName customComponentName = ComponentName.unflattenFromString(componentString);
-        synchronized (mCustomRecentsLongPressHandlerCandidates) {
-            for (ComponentName candidate : mCustomRecentsLongPressHandlerCandidates) {
-                if (candidate.equals(customComponentName)) {
-                    // Found match
-                    mCustomRecentsLongPressHandler = customComponentName;
-
-                    return;
-                }
-            }
-
-            // Did not find match, probably because the selected application has
-            // now been uninstalled for some reason. Since user-selected app is
-            // still saved inside Settings, PhoneStatusBar should fall back to
-            // the default for now.  (We will update this either when the
-            // package is reinstalled or when the user selects another Setting.)
-            mCustomRecentsLongPressHandler = null;
-        }
-    }
-
-    /**
-     * Updates the cache of Recents Long Press applications.
-     *
-     * These applications must:
-     * - handle the Intent.ACTION_RECENTS_LONG_PRESS (which is permissions protected); and
-     * - not be disabled by the user or the system.
-     *
-     * More than one handler can be a candidate.  When the action is invoked,
-     * the user setting (stored in Settings.Secure) is consulted.
-     */
-    private void updateCustomRecentsLongPressCandidates() {
-        synchronized (mCustomRecentsLongPressHandlerCandidates) {
-            mCustomRecentsLongPressHandlerCandidates.clear();
-
-            PackageManager pm = mContext.getPackageManager();
-            Intent intent = new Intent(Intent.ACTION_RECENTS_LONG_PRESS);
-
-            // Search for all apps that can handle ACTION_RECENTS_LONG_PRESS
-            List<ResolveInfo> activities = pm.queryIntentActivities(intent,
-                    PackageManager.MATCH_DEFAULT_ONLY);
-            for (ResolveInfo info : activities) {
-                // Only cache packages that are not disabled
-                int packageState = mContext.getPackageManager().getApplicationEnabledSetting(
-                        info.activityInfo.packageName);
-
-                if (packageState != PackageManager.COMPONENT_ENABLED_STATE_DISABLED &&
-                    packageState != PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER) {
-
-                    mCustomRecentsLongPressHandlerCandidates.add(
-                        new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
-                }
-
-            }
-        }
-    }
-
-    private ActivityManager.RunningTaskInfo getLastTask(final ActivityManager am) {
-        final String defaultHomePackage = resolveCurrentLauncherPackage();
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
-
-        for (int i = 1; i < tasks.size(); i++) {
-            String packageName = tasks.get(i).topActivity.getPackageName();
-            if (!packageName.equals(defaultHomePackage)
-                    && !packageName.equals(mContext.getPackageName())) {
-                return tasks.get(i);
-            }
+            Log.d(TAG, "Unable to reach activity manager", e);
         }
     }
 

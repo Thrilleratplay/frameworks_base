@@ -474,26 +474,11 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
         mCurrentT = t;
         float height = mCollapsedHeight + t * (mExpandedHeight - mCollapsedHeight);
-        if (height != mLastHeight) {
-            if (height < mCollapsedHeight) {
-                height = mCollapsedHeight;
-            }
-            if (height > mExpandedHeight) {
-                height = mExpandedHeight;
-            }
-            final float heightFinal = height;
-            setClipping(heightFinal);
-
-            post(new Runnable() {
-                 public void run() {
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBackgroundImage.getLayoutParams();
-                    params.height = (int)heightFinal;
-                    mBackgroundImage.setLayoutParams(params);
-                }
-            });
-
-            updateLayoutValues(t);
-            mLastHeight = heightFinal;
+        if (height < mCollapsedHeight) {
+            height = mCollapsedHeight;
+        }
+        if (height > mExpandedHeight) {
+            height = mExpandedHeight;
         }
         setClipping(height);
         updateLayoutValues(t);
