@@ -174,15 +174,6 @@
         <item>bootloader</item>
      </string-array>
 
-     <!-- Do not translate. Defines the mapping of notification package names
-          from the actual triggering package to the user selectable package.
-          E.g. GTalk notifications come via Google Services Framework
-          Format: [triggering package]|[user package] -->
-     <string-array name="notification_light_package_mapping" translatable="false">
-         <item>com.google.android.gsf|com.google.android.talk</item>
-     </string-array>
-
-
     <!-- Do not translate. Defines the mapping of notification package names
          from the actual triggering package to the user selectable package.
          E.g. GTalk notifications come via Google Services Framework
@@ -190,5 +181,5 @@
      <string-array name="notification_light_package_mapping" translatable="false">
          <item>com.google.android.gsf|com.google.android.talk</item>
      </string-array>
- 
+
 </resources>
