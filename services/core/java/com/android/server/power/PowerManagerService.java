@@ -76,6 +76,8 @@ import java.util.Arrays;
 
 import libcore.util.Objects;
 
+import org.slim.provider.SlimSettings;
+
 import static android.os.PowerManagerInternal.POWER_HINT_INTERACTION;
 import static android.os.PowerManagerInternal.WAKEFULNESS_ASLEEP;
 import static android.os.PowerManagerInternal.WAKEFULNESS_AWAKE;
