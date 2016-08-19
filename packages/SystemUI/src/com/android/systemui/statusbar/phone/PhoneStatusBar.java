@@ -107,9 +107,7 @@ import android.widget.TextView;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.util.cm.ActionUtils;
 import com.android.internal.util.du.WeatherControllerImpl;
-import com.android.internal.util.tipsy.DUPackageMonitor;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -347,6 +345,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     boolean mExpandedVisible;
 
+    private int mBatterySaverWarningColor;
+
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
     // the tracker view
@@ -380,23 +380,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private int mNavigationIconHints = 0;
     private HandlerThread mHandlerThread;
-
-    Runnable mLongPressBrightnessChange = new Runnable() {
-        @Override
-        public void run() {
-            mStatusBarView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            adjustBrightness(mInitialTouchX);
-            mLinger = BRIGHTNESS_CONTROL_LINGER_THRESHOLD + 1;
-        }
-    };
-
-    // Custom Recents Long Press
-    // - Tracks Event state for custom (user-configurable) Long Presses.
-    private boolean mCustomRecentsLongPressed = false;
-    // - The ArrayList is updated when packages are added and removed.
-    private List<ComponentName> mCustomRecentsLongPressHandlerCandidates = new ArrayList<>();
-    // - The custom Recents Long Press, if selected.  When null, use default (switch last app).
-    private ComponentName mCustomRecentsLongPressHandler = null;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -1081,7 +1064,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         packageFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         packageFilter.addDataScheme("package");
-        context.registerReceiver(mPackageBroadcastReceiver, packageFilter);
 
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
@@ -2103,10 +2085,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         return mLeaveOpenOnKeyguardHide;
     }
 
-    public boolean isKeyguardShowingMedia() {
-        return mKeyguardShowingMedia;
-    }
-
     public boolean isQsExpanded() {
         return mNotificationPanel.isQsExpanded();
     }
@@ -2688,7 +2666,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         if (mode == MODE_WARNING) {
-            transitions.setWarningColor(mBatterySaverWarningColor);
+          //FIXME
+          //  transitions.setWarningColor(mBatterySaverWarningColor);
         }
         transitions.transitionTo(mode, anim);
     }
@@ -3111,18 +3090,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     };
 
-    private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            if (DEBUG) Log.v(TAG, "onReceive: " + intent);
-            String action = intent.getAction();
-            if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
-                    Intent.ACTION_PACKAGE_CHANGED.equals(action) ||
-                    Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(action) ||
-                    Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-                updateCustomRecentsLongPressHandler(true);
-            }
-        }
-    };
 
     private BroadcastReceiver mDemoReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -3144,6 +3111,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (DEBUG_MEDIA_FAKE_ARTWORK) {
                     updateMediaMetaData(true);
                 }
+            } else if (Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED.equals(action)) {
+                updateMediaMetaData(true);
             }
         }
     };
@@ -3363,20 +3332,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         // AdapterView does not support removeAllViews so check before calling
         if (!(parent instanceof AdapterView)) parent.removeAllViews();
-    }
-
-    public void resetQsPanelVisibility() {
-        mShowTaskList = mShowTaskList;
-        if (mShowTaskList) {
-            mQSPanel.setVisibility(View.VISIBLE);
-            mTaskManagerPanel.setVisibility(View.GONE);
-            mShowTaskList = false;
-        }
-    }
-
-    private void recreateStatusBar() {
-       mStatusBarHeaderMachine.updateEnablement();
-       mStatusBarHeaderMachine.doUpdateStatusHeaderObservers(true);
     }
 
     /**
@@ -4349,8 +4304,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             boolean sendBackLongPress = false;
             IActivityManager activityManager = ActivityManagerNative.getDefault();
             boolean isAccessiblityEnabled = mAccessibilityManager.isEnabled();
+            long time = System.currentTimeMillis();
             if (activityManager.isInLockTaskMode() && !isAccessiblityEnabled) {
-                long time = System.currentTimeMillis();
                 // If we recently long-pressed the other button then they were
                 // long-pressed 'together'
                 if ((time - mLastLockToAppLongPress) < LOCK_TO_APP_GESTURE_TOLERENCE) {
@@ -4374,150 +4329,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     activityManager.stopLockTaskModeOnCurrent();
                     // When exiting refresh disabled flags.
                     mNavigationBarView.setDisabledFlags(mDisabled1, true);
-                    mNavigationBarView.setOverrideMenuKeys(false);
                 }
                 mLastLockToAppLongPress = time;
             }
-
-            return sendBackLongPress;
         } catch (RemoteException e) {
             Log.d(TAG, "Unable to reach activity manager", e);
-            return false;
-        }
-    }
-
-    protected View.OnTouchListener mRecentsPreloadOnTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-            // Handle Document switcher
-            // Additional optimization when we have software system buttons - start loading the recent
-            // tasks on touch down
-            if (action == MotionEvent.ACTION_DOWN) {
-                preloadRecents();
-            } else if (action == MotionEvent.ACTION_CANCEL) {
-                cancelPreloadingRecents();
-            } else if (action == MotionEvent.ACTION_UP) {
-                if (!v.isPressed()) {
-                    cancelPreloadingRecents();
-                }
-            }
-            if (sendBackLongPress) {
-                KeyButtonView keyButtonView = (KeyButtonView) v;
-                keyButtonView.sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
-                keyButtonView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "Cannot get recent tasks", e);
-        }
-        if (recentTasks != null && recentTasks.size() > 0) {
-            String pkgName = recentTasks.get(0).baseIntent.getComponent().getPackageName();
-            intent.putExtra(Intent.EXTRA_CURRENT_PACKAGE_NAME, pkgName);
-        }
-
-        intent.setComponent(customComponentName);
-        try {
-            // Allow the touch event to continue into the new activity.
-            mNavigationBarView.setSlippery(true);
-            mCustomRecentsLongPressed = true;
-
-            mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
-
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Cannot start activity", e);
-
-            // If the activity failed to launch, clean up
-            cleanupCustomRecentsLongPressHandler();
-        }
-    }
-
-    /**
-     * Get component name for the recent long press setting. Null means default switch to last app.
-     *
-     * Note: every time packages changed, the setting must be re-evaluated.  This is to check that the
-     * component was not uninstalled or disabled.
-     */
-    private void updateCustomRecentsLongPressHandler(boolean scanPackages) {
-        // scanPackages should be true when the PhoneStatusBar is starting for
-        // the first time, and when any package activity occurred.
-        if (scanPackages) {
-            updateCustomRecentsLongPressCandidates();
-        }
-
-        String componentString = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.RECENTS_LONG_PRESS_ACTIVITY);
-        if (componentString == null) {
-            mCustomRecentsLongPressHandler = null;
-            return;
-        }
-
-        ComponentName customComponentName = ComponentName.unflattenFromString(componentString);
-        synchronized (mCustomRecentsLongPressHandlerCandidates) {
-            for (ComponentName candidate : mCustomRecentsLongPressHandlerCandidates) {
-                if (candidate.equals(customComponentName)) {
-                    // Found match
-                    mCustomRecentsLongPressHandler = customComponentName;
-
-                    return;
-                }
-            }
-
-            // Did not find match, probably because the selected application has
-            // now been uninstalled for some reason. Since user-selected app is
-            // still saved inside Settings, PhoneStatusBar should fall back to
-            // the default for now.  (We will update this either when the
-            // package is reinstalled or when the user selects another Setting.)
-            mCustomRecentsLongPressHandler = null;
-        }
-    }
-
-    /**
-     * Updates the cache of Recents Long Press applications.
-     *
-     * These applications must:
-     * - handle the Intent.ACTION_RECENTS_LONG_PRESS (which is permissions protected); and
-     * - not be disabled by the user or the system.
-     *
-     * More than one handler can be a candidate.  When the action is invoked,
-     * the user setting (stored in Settings.Secure) is consulted.
-     */
-    private void updateCustomRecentsLongPressCandidates() {
-        synchronized (mCustomRecentsLongPressHandlerCandidates) {
-            mCustomRecentsLongPressHandlerCandidates.clear();
-
-            PackageManager pm = mContext.getPackageManager();
-            Intent intent = new Intent(Intent.ACTION_RECENTS_LONG_PRESS);
-
-            // Search for all apps that can handle ACTION_RECENTS_LONG_PRESS
-            List<ResolveInfo> activities = pm.queryIntentActivities(intent,
-                    PackageManager.MATCH_DEFAULT_ONLY);
-            for (ResolveInfo info : activities) {
-                // Only cache packages that are not disabled
-                int packageState = mContext.getPackageManager().getApplicationEnabledSetting(
-                        info.activityInfo.packageName);
-
-                if (packageState != PackageManager.COMPONENT_ENABLED_STATE_DISABLED &&
-                    packageState != PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER) {
-
-                    mCustomRecentsLongPressHandlerCandidates.add(
-                        new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
-                }
-
-            }
-        }
-    }
-
-    private ActivityManager.RunningTaskInfo getLastTask(final ActivityManager am) {
-        final String defaultHomePackage = resolveCurrentLauncherPackage();
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
-
-        for (int i = 1; i < tasks.size(); i++) {
-            String packageName = tasks.get(i).topActivity.getPackageName();
-            if (!packageName.equals(defaultHomePackage)
-                    && !packageName.equals(mContext.getPackageName())) {
-                return tasks.get(i);
-            }
         }
     }
 

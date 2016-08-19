@@ -182,6 +182,25 @@ public class KeyguardStatusView extends GridLayout implements
         mClockView.setFormat24Hour(Patterns.clockView24);
     }
 
+    public void hideLockscreenItems() {
+      if (Settings.System.getIntForUser(mContext.getContentResolver(),
+            Settings.System.HIDE_LOCKSCREEN_CLOCK, 1, UserHandle.USER_CURRENT) == 1) {
+        mClockView = (TextClock) findViewById(R.id.clock_view);
+        mClockView.setVisibility(View.VISIBLE);
+      } else {
+        mClockView = (TextClock) findViewById(R.id.clock_view);
+        mClockView.setVisibility(View.GONE);
+      }
+      if (Settings.System.getIntForUser(mContext.getContentResolver(),
+            Settings.System.HIDE_LOCKSCREEN_DATE, 1, UserHandle.USER_CURRENT) == 1) {
+        mDateView = (TextClock) findViewById(R.id.date_view);
+        mDateView.setVisibility(View.VISIBLE);
+      } else {
+        mDateView = (TextClock) findViewById(R.id.date_view);
+        mDateView.setVisibility(View.GONE);
+      }
+    }
+
     private void refresh() {
         AlarmManager.AlarmClockInfo nextAlarm =
                 mAlarmManager.getNextAlarmClock(UserHandle.USER_CURRENT);
@@ -317,6 +336,12 @@ public class KeyguardStatusView extends GridLayout implements
                 res.getColor(R.color.keyguard_default_icon_color);
         int iconColor = Settings.System.getInt(resolver,
                 Settings.System.LOCK_SCREEN_WEATHER_ICON_COLOR, defaultIconColor);
+        boolean showAlarm = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_ALARM, 1, UserHandle.USER_CURRENT) == 1;
+        boolean showClock = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_CLOCK, 1, UserHandle.USER_CURRENT) == 1;
+        boolean showDate = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_DATE, 1, UserHandle.USER_CURRENT) == 1;
         if (forceHide) {
             mWeatherView.setVisibility(View.GONE);
         } else {

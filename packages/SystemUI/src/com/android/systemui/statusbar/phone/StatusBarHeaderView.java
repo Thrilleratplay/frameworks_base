@@ -130,6 +130,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private boolean mShowingDetail;
     private boolean mDetailTransitioning;
 
+    private boolean mShowWeather;
+
+    private ImageView mBackgroundImage;
+    private Drawable mCurrentBackground;
+    private float mLastHeight;
+
     private UserInfoController mUserInfoController;
 
     public StatusBarHeaderView(Context context, AttributeSet attrs) {

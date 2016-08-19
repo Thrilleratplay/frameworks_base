@@ -2483,28 +2483,6 @@ public final class Settings {
         public static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
 
         /**
-         * The keyboard brightness to be used while the screen is on.
-         * Valid value range is between 0 and {@link PowerManager#getMaximumKeyboardBrightness()}
-         * @hide
-         */
-        public static final String KEYBOARD_BRIGHTNESS = "keyboard_brightness";
-
-        /**
-         * The button brightness to be used while the screen is on or after a button press,
-         * depending on the value of {@link BUTTON_BACKLIGHT_TIMEOUT}.
-         * Valid value range is between 0 and {@link PowerManager#getMaximumButtonBrightness()}
-         * @hide
-         */
-        public static final String BUTTON_BRIGHTNESS = "button_brightness";
-
-        /**
-         * The time in ms to keep the button backlight on after pressing a button.
-         * A value of 0 will keep the buttons on for as long as the screen is on.
-         * @hide
-         */
-        public static final String BUTTON_BACKLIGHT_TIMEOUT = "button_backlight_timeout";
-
-        /**
          * Control whether the process CPU usage meter should be shown.
          *
          * @deprecated Use {@link Global#SHOW_PROCESSES} instead
@@ -3030,6 +3008,24 @@ public final class Settings {
 
         /** @hide */
         public static final Validator TTY_MODE_VALIDATOR = new InclusiveIntegerRangeValidator(0, 3);
+
+        /**
+         * Hide lockscreen date
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_DATE = "hide_lockscreen_date";
+
+        /**
+         * Hide lockscreen alarm
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_ALARM = "hide_lockscreen_alarm";
+
+        /**
+         * Hide lockscreen clock
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_CLOCK = "hide_lockscreen_clock";
 
         /**
          * Whether the sounds effects (key clicks, lid open ...) are enabled. The value is
@@ -4602,44 +4598,6 @@ public final class Settings {
             }
 
             return sNameValueCache.getStringForUser(resolver, name, userHandle);
-        }
-
-        /**
-         * Put a delimited list as a string
-         * @param resolver to access the database with
-         * @param name to store
-         * @param delimiter to split
-         * @param list to join and store
-         * @hide
-         */
-        public static void putListAsDelimitedString(ContentResolver resolver, String name,
-                                                    String delimiter, List<String> list) {
-            String store = TextUtils.join(delimiter, list);
-            putString(resolver, name, store);
-        }
-
-        /**
-         * Get a delimited string returned as a list
-         * @param resolver to access the database with
-         * @param name to store
-         * @param delimiter to split the list with
-         * @return list of strings for a specific Settings.Secure item
-         * @hide
-         */
-        public static List<String> getDelimitedStringAsList(ContentResolver resolver, String name,
-                                                            String delimiter) {
-            String baseString = getString(resolver, name);
-            List<String> list = new ArrayList<String>();
-            if (!TextUtils.isEmpty(baseString)) {
-                final String[] array = TextUtils.split(baseString, Pattern.quote(delimiter));
-                for (String item : array) {
-                    if (TextUtils.isEmpty(item)) {
-                        continue;
-                    }
-                    list.add(item);
-                }
-            }
-            return list;
         }
 
         /**
